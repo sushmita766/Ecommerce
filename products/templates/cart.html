@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container pt-3 min-vh-100">
+    <h4>Cart</h4>
+    <hr class="hr" />
+
+    {% if products %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <div class="col-md-6">
+                <th class="col">Products</th>
+                <div/>
+                <div class="col-md-2">
+                <th class="col">Price</th>
+                <div/>
+                <div class="col-md-2">
+                <th class="col">Quantity</th>
+                <div/>
+                <div class="col-md-2">
+                <th class="col">Total</th>
+                <div/>
+                <div class="col-md-2">
+                <th class="col">Operation</th>
+                </div>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in products %}
+            <tr>
+                <td>
+                    <a class="text-decoration-none text-primary" href="{% url 'product' item.product.pk %}">{{ item.product.name }}</a>
+                </td>
+                <td>Rs{{ item.product.price }}</td>
+                <td>
+                    <span class="input-group-btn">
+                    <a class="text-decoration-none btn btn-sm btn-outline-danger" href="{% url 'cart_quantity' item.pk %}?action=remove">-</a>
+                    </span>
+                    <span type="text" id="quantity" name="quantity">{{ item.quantity }}</span>
+                    <span class="input-group-btn">
+                        <a class="text-decoration-none btn btn-sm btn-outline-success" href="{% url 'cart_quantity' item.pk %}?action=add">+</a>
+                    </span>     
+                    </td>
+                <td>Rs{{ item.get_total }}</td>
+                <td><a class="btn btn-danger btn-sm" href="{% url 'cart_action' item.pk %}?action=remove">Remove</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form method="POST" action="{% url 'cart' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="card my-2">
+        <div class="card-body">
+            <h4>Delivery method:</h4>
+            <hr class="hr" />
+            <select name="delivery_method_order" class="form-select">
+                <option value="1" selected>Courier delivery</option>
+                <option value="3">Personal pickup</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card my-2">
+        <div class="card-body">
+            <h4>Paymnet method:</h4>
+            <hr class="hr" />
+            <select name="payment_method_order" class="form-select">
+                <option value="1" selected>Cash on delivery</option>
+                <option value="2">Esewa</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card my-2">
+        <div class="card-body">
+            <h4>Shipping information:</h4>
+            <hr class="hr" />
+            {{ form.as_p }}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+              <p>Total: Rs{{ cart_total|floatformat:2 }}</p> 
+              <button class="btn btn-outline-success">Submit</button> 
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-body">
+              <p>Total: Rs{{ cart_total|floatformat:2 }}</p> 
+              <a href="orders/payment.html" button class="btn btn-outline-success">Submit</button>
+
+    </form>
+    {% else %}
+    <span>you have no products in the cart.</span>
+    {% endif %}  
+</div>
+{% endblock %}
